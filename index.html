@@ -1,10 +1,40 @@
 <!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Meu Norte Financeiro</title><style>
 *{box-sizing:border-box}body{margin:0;background:#050f0a;color:#fff;font-family:system-ui,-apple-system,Arial}header{padding:18px 16px 8px;background:linear-gradient(180deg,#0a2317,#050f0a)}h1{margin:2px 0;font-size:34px;letter-spacing:-.5px}h1 i{color:#2ee86b;font-style:normal}.sub{color:#a8c0b2;font-size:14px}.top{display:flex;gap:8px;overflow:auto;padding:12px 0}.chip{white-space:nowrap;padding:10px 16px;border-radius:999px;background:#122a1d;color:#d8e8dd;border:0}.chip.on{background:#2ee86b;color:#06210f;font-weight:800}.hero{margin:12px 16px;background:linear-gradient(135deg,#123324,#0a1f14);border:1px solid #21492f;border-radius:22px;padding:20px;box-shadow:0 12px 30px rgba(0,0,0,.35)}.hero span{font-size:12px;letter-spacing:1.5px;color:#9fd8ae}.hero b{font-size:48px;display:block;line-height:1}.hero small{color:#9fb3a8}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px}.card{background:#101f17;border:1px solid #1c3525;border-radius:18px;padding:14px}.card i{font-style:normal;font-size:18px}.card span{color:#93a89b;font-size:11px;display:block;margin:4px 0}.card b{font-size:20px}.green{color:#2ee86b}.red{color:#ff6b6b}.yellow{color:#ffcf3f}.sec{margin:16px;background:#101f17;border-radius:20px;padding:16px}.sec h3{margin:0 0 8px}.bar{height:10px;background:#0a1f14;border-radius:99px;overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;background:#2ee86b}canvas{width:100%;height:150px}.item{background:#0d1d13;border-radius:14px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;gap:8px}.item small{color:#9fb3a8}.status{padding:6px 10px;border-radius:99px;font-size:12px;font-weight:700;border:0}.venc{background:#ffcf3f;color:#3a2a00}.pago{background:#2ee86b;color:#06210f}.atraso{background:#ff4d4d;color:#fff}.btn{padding:14px 16px;border-radius:12px;font-weight:700;border:0}.g{background:#2ee86b;color:#06210f}.gh{background:#182d21;color:#fff;border:1px solid #2a4a38}.fab{position:fixed;right:16px;bottom:18px;background:#2ee86b;color:#06210f;padding:16px 20px;border-radius:999px;font-weight:800;border:0;box-shadow:0 10px 24px rgba(46,232,107,.35);z-index:20}.modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:flex-end;justify-content:center;z-index:50}.modal.open{display:flex}.sheet{background:#0f1e15;width:100%;max-width:560px;max-height:90vh;overflow:auto;border-radius:22px 22px 0 0;padding:20px}.sheet input{width:100%;padding:16px;border-radius:12px;border:1px solid #2a4a38;background:#07120d;color:#fff;margin:6px 0;font-size:16px}.row{display:flex;gap:8px}.row>*{flex:1}.opt{width:100%;text-align:left;background:#122a1d;color:#fff;padding:16px;border-radius:12px;margin:6px 0;font-size:16px;border:0}label{font-size:13px;color:#9fb3a8}table{width:100%;border-collapse:collapse}td,th{padding:10px;border-bottom:1px solid #22382c;text-align:left;font-size:13px}.insight{background:#0a1f14;border-left:4px solid #2ee86b;padding:12px;border-radius:10px;margin:8px 0;font-size:14px}
 </style></head><body>
+<div id="lockScreen" style="display:none;position:fixed;inset:0;background:#050f0a;z-index:9999;overflow:auto;padding:20px">
+<div style="max-width:520px;margin:20px auto;background:#101f17;border-radius:20px;padding:22px;border:1px solid #2a4a38">
+<h2 style="margin:0">🔒 Período de teste encerrado</h2>
+<p style="color:#a8c0b2">Seu teste de 24 horas acabou. Para continuar usando, peça sua licença ao fornecedor.</p>
+<div style="background:#0a1f14;border-radius:12px;padding:12px;font-size:13px;line-height:1.7">
+<b>Seu ID do celular:</b><br><span id="myDeviceId" style="color:#2ee86b;word-break:break-all"></span><br>
+<span style="color:#a8c0b2">Copie esse ID e envie para quem te vendeu o app. Ele vai gerar sua licença.</span><br>
+<span id="trialInfo"></span>
+</div>
+<label style="margin-top:14px;display:block">Cole sua licença aqui</label>
+<input id="licKey" placeholder="Ex: MENSAL-XXXX-XXXX ou VITALICIA-XXXX-XXXX" style="width:100%;padding:16px;border-radius:12px;border:1px solid #2a4a38;background:#07120d;color:#fff;margin:6px 0">
+<button class="btn g" style="width:100%" onclick="ativarLicenca()">🔓 Liberar app</button>
+<p id="licMsg" style="color:#ff8a8a"></p>
+<hr style="border:1px solid #22382c;margin:16px 0">
+<h3>👑 Área do dono — Gerar licença</h3>
+<p style="color:#a8c0b2;font-size:13px">Cole o ID do celular do cliente, escolha o tipo e gere a chave para enviar para ele.</p>
+<label>ID do celular do cliente</label><input id="genDevice" placeholder="Cole o ID do cliente">
+<div class="row"><button class="btn gh" id="genMensalBtn" onclick="gerarLic('MENSAL')">Mensal (30 dias)</button><button class="btn gh" id="genVitalBtn" onclick="gerarLic('VITALICIA')">Vitalícia</button></div>
+<div id="genOut" style="background:#07120d;border-radius:12px;padding:12px;margin-top:10px;word-break:break-all;color:#2ee86b;font-weight:700"></div>
+<button class="btn gh" style="width:100%;margin-top:8px" onclick="copiarLic()">📋 Copiar licença gerada</button>
+</div></div>
 <header><div style="color:#2ee86b;font-size:11px;letter-spacing:2px">✦ COMEÇANDO DO ZERO • 100% SEU</div><h1>Meu Norte <i>Financeiro</i></h1><div class="sub">Sua bússola para receber, pagar e planejar.</div>
 <div style="margin-top:12px;background:#0d1d13;border:1px solid #21492f;border-radius:16px;padding:14px">
 <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:15px">👤 <span id="perfilNome">Meu cabeçalho — toque para preencher</span></b><button class="btn gh" style="padding:8px 12px" onclick="openPerfil()">✏️ Editar</button></div>
 <div id="perfilInfo" style="color:#a8c0b2;font-size:13px;margin-top:6px;line-height:1.6">Nome, endereço, telefone e CPF/CNPJ aparecem aqui e no topo.</div>
+</div>
+<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+<button class="btn g" onclick="salvarTudo()" style="flex:1">💾 Salvar tudo</button>
+<button class="btn gh" onclick="openSaida()" style="flex:1">🏦 Saída de conta</button>
+</div>
+<div id="salvoMsg" style="color:#2ee86b;font-size:12px;margin-top:6px"></div>
+<div style="display:flex;gap:8px;margin-top:8px">
+<div style="flex:1;background:#0d1d13;border-radius:14px;padding:12px"><span style="color:#a8c0b2;font-size:12px">🏦 CONTA BANCO</span><br><b id="saldoBanco">R$ 0,00</b></div>
+<div style="flex:1;background:#0d1d13;border-radius:14px;padding:12px"><span style="color:#a8c0b2;font-size:12px">💵 EM MÃOS</span><br><b id="saldoMaos">R$ 0,00</b></div>
 </div>
 <div class="top"><button class="chip on" onclick="tab('dash',this)">📊 Visão Geral</button><button class="chip" onclick="tab('trans',this)">💸 Transações</button><button class="chip" onclick="tab('plan',this)">📋 Planilha</button><button class="chip" onclick="tab('orc',this)">🎯 Orçamentos</button><button class="chip" onclick="tab('ins',this)">💡 Insights</button></div></header>
 <div id="dash">
@@ -36,9 +66,17 @@
 <div class="row"><button class="btn gh" onclick="hoje()">Hoje</button><button class="btn gh" onclick="ontem()">Ontem</button></div>
 <label>Categoria</label><button class="btn gh" style="width:100%;text-align:left" id="btnCat" onclick="openPick('cat')">Escolher categoria ▾</button>
 <label>Forma de pagamento</label><button class="btn gh" style="width:100%;text-align:left" id="btnPag" onclick="openPick('pag')">Escolher pagamento ▾</button>
+<label>Conta</label><div class="row"><button class="btn gh" id="cBanco" onclick="setConta('Banco')">🏦 Banco</button><button class="btn gh" id="cMaos" onclick="setConta('Em mãos')">💵 Em mãos</button></div>
 <label>Status</label><div class="row"><button class="btn gh" onclick="setStatus('A Vencer')">A Vencer</button><button class="btn gh" onclick="setStatus('Pago')">Pago</button><button class="btn gh" onclick="setStatus('Em Atraso')">Em Atraso</button></div>
 <label>Fixa / Variável</label><div class="row"><button class="btn gh" onclick="setFixa('Fixa')">Fixa</button><button class="btn gh" onclick="setFixa('Variável')">Variável</button></div>
 <button class="btn g" style="width:100%;margin-top:12px" onclick="salvar()">Adicionar transação</button><button class="btn gh" style="width:100%;margin-top:8px" onclick="closeModal()">Fechar</button></div></div>
+<div class="modal" id="saidaModal"><div class="sheet"><h2>🏦 Saída de conta</h2><p style="color:#a8c0b2">Tirar dinheiro do Banco ou Em mãos. Vira uma despesa e baixa o saldo na hora, para bater com a receita recebida.</p>
+<label>De onde vai sair?</label><div class="row"><button class="btn gh" id="sBanco" onclick="setSaidaConta('Banco')">🏦 Banco</button><button class="btn gh" id="sMaos" onclick="setSaidaConta('Em mãos')">💵 Em mãos</button></div>
+<label>Descrição</label><input id="saidaDesc" placeholder="Ex: Pagamento fornecedor, saque">
+<label>Para quem paguei</label><input id="saidaQuem" placeholder="Ex: Sup. Santo Antônio">
+<label>Valor da saída (R$)</label><input id="saidaValor" inputmode="decimal" placeholder="0,00">
+<label>Data — DIA / MÊS / ANO</label><div class="row"><input id="saidaDia" inputmode="numeric" placeholder="Dia"><input id="saidaMes" inputmode="numeric" placeholder="Mês"><input id="saidaAno" inputmode="numeric" placeholder="Ano"></div>
+<button class="btn g" style="width:100%;margin-top:10px" onclick="confirmarSaida()">Confirmar saída</button><button class="btn gh" style="width:100%;margin-top:8px" onclick="closeSaida()">Fechar</button></div></div>
 <div class="modal" id="perfilModal"><div class="sheet"><h2>👤 Meu cabeçalho</h2><p style="color:#a8c0b2">Preencha uma vez, fica salvo e aparece no topo.</p>
 <label>Nome / Nome da empresa</label><input id="pNome" placeholder="Ex: Seu nome ou empresa">
 <label>Endereço</label><input id="pEnd" placeholder="Ex: Rua, número, bairro, cidade">
@@ -49,7 +87,8 @@
 <div class="modal" id="pickModal"><div class="sheet"><h3 id="pickTitle">Escolher</h3><div id="pickList"></div><button class="btn gh" style="width:100%" onclick="closePick()">Fechar</button></div></div>
 <script>
 let dados=JSON.parse(localStorage.getItem('meu-norte-v4')||'{"trans":[],"meta":0,"orcAlim":0,"perfil":{"nome":"","end":"","tel":"","doc":""}}');
-if(!dados.perfil) dados.perfil={nome:'',end:'',tel:'',doc:''};
+if(!dados.perfil) dados.perfil={nome:'',end:'',tel:'',doc:''}; if(dados.contas==null) dados.contas={banco:0,maos:0}; if(!dados.ultimoSalvo) dados.ultimoSalvo='';
+let contaSel='Banco', saidaContaSel='Banco';
 let tipo='Despesa',status='A Vencer',fixa='Variável',categoria='',pagamento='',filtro='all';
 const catsD=['Moradia','Alimentação','Transporte','Lazer','Saúde','Compras','Educação','Assinaturas','Outros'],catsR=['Salário','Venda','Extra','Outros'],pags=['Pix','Dinheiro','Cartão de Crédito','Cartão de Débito','Boleto','Transferência','Outros'];
 function fmt(v){return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
@@ -79,23 +118,71 @@ function render(){
  let pf=dados.perfil||{nome:'',end:'',tel:'',doc:''};
  document.getElementById('perfilNome').textContent=pf.nome||'Meu cabeçalho — toque para preencher';
  document.getElementById('perfilInfo').innerHTML=(pf.nome?('🏷️ '+pf.nome+'<br>'):'')+(pf.end?('📍 '+pf.end+'<br>'):'')+(pf.tel?('📞 '+pf.tel+'<br>'):'')+(pf.doc?('🪪 CPF/CNPJ: '+pf.doc):'');
+ document.getElementById('saldoBanco').textContent=fmt(dados.contas.banco||0);
+ document.getElementById('saldoMaos').textContent=fmt(dados.contas.maos||0);
+ if(dados.ultimoSalvo) document.getElementById('salvoMsg').textContent='✅ Salvo em: '+dados.ultimoSalvo;
  let hist=[...new Set(dados.trans.map(t=>t.quem).filter(Boolean))];document.getElementById('hist').innerHTML=hist.map(h=>`<option value="${h}">`).join('');
 }
 function openPerfil(){document.getElementById('pNome').value=dados.perfil.nome||'';document.getElementById('pEnd').value=dados.perfil.end||'';document.getElementById('pTel').value=dados.perfil.tel||'';document.getElementById('pDoc').value=dados.perfil.doc||'';document.getElementById('perfilModal').classList.add('open')}
 function closePerfil(){document.getElementById('perfilModal').classList.remove('open')}
 function salvarPerfil(){dados.perfil={nome:document.getElementById('pNome').value,end:document.getElementById('pEnd').value,tel:document.getElementById('pTel').value,doc:document.getElementById('pDoc').value};closePerfil();save()}
+
+// ===== TRAVA / LICENÇA - não mexe em nada do app, só bloqueia por cima =====
+const SEGREDO='MEU-NORTE-2026-SEGREDO';
+let deviceId=localStorage.getItem('device_id');
+if(!deviceId){deviceId='CEL-'+Math.random().toString(36).slice(2,8).toUpperCase()+'-'+Date.now().toString(36).toUpperCase();localStorage.setItem('device_id',deviceId);}
+let trialStart=parseInt(localStorage.getItem('trial_start')||'0');
+if(!trialStart){trialStart=Date.now();localStorage.setItem('trial_start',String(trialStart));}
+const TRIAL_DIAS=1; // 24 HORAS // <-- MUDE AQUI: 1 = 24 horas, 8 = 8 dias
+function hashStr(s){let h=5381;for(let i=0;i<s.length;i++){h=((h*33)^s.charCodeAt(i))>>>0}return h.toString(36).toUpperCase().padStart(6,'0')}
+function gerarChave(dev,tipo){let a=hashStr(dev+'|'+tipo+'|'+SEGREDO);let b=hashStr(tipo+'|'+dev+'|'+SEGREDO+'X');return tipo+'-'+a+'-'+b}
+function gerarLic(tipo){let dev=(document.getElementById('genDevice').value||'').trim();if(!dev){document.getElementById('genOut').textContent='Cole o ID do celular do cliente primeiro.';return}let k=gerarChave(dev,tipo);document.getElementById('genOut').textContent=k;window._ultimaLic=k}
+function copiarLic(){if(window._ultimaLic&&navigator.clipboard)navigator.clipboard.writeText(window._ultimaLic).then(()=>alert('Licença copiada!'))}
+function licValida(){
+ let lic=JSON.parse(localStorage.getItem('licenca')||'null');if(!lic)return false;
+ if(lic.key!==gerarChave(deviceId,lic.tipo))return false;
+ if(lic.tipo==='MENSAL'){let ativ=lic.ativado||0;if(Date.now()-ativ>30*24*60*60*1000)return false}
+ return true;
+}
+function verificarTrava(){
+ let diasUsados=(Date.now()-trialStart)/(24*60*60*1000);
+ let faltam=Math.max(0,TRIAL_DIAS-diasUsados);
+ if(licValida()){document.getElementById('lockScreen').style.display='none';return true}
+ if(faltam>0){document.getElementById('lockScreen').style.display='none';return true}
+ // travado
+ document.getElementById('lockScreen').style.display='block';
+ document.getElementById('myDeviceId').textContent=deviceId;
+ document.getElementById('trialInfo').textContent='Teste de 24 horas encerrado.';
+ return false;
+}
+function ativarLicenca(){
+ let k=(document.getElementById('licKey').value||'').trim().toUpperCase();
+ let tipo=k.startsWith('VITALICIA')?'VITALICIA':k.startsWith('MENSAL')?'MENSAL':null;
+ if(!tipo||k!==gerarChave(deviceId,tipo)){document.getElementById('licMsg').textContent='Licença inválida para este celular. Confira o ID.';return}
+ localStorage.setItem('licenca',JSON.stringify({key:k,tipo,ativado:Date.now()}));
+ document.getElementById('licMsg').textContent='';verificarTrava();alert('App liberado! '+(tipo==='VITALICIA'?'Licença vitalícia.':'Licença mensal - 30 dias.'));
+}
+// mostra dias restantes no console / ao abrir
+setTimeout(()=>{verificarTrava()},50);
+function salvarTudo(){dados.ultimoSalvo=new Date().toLocaleString('pt-BR');save();document.getElementById('salvoMsg').textContent='✅ Tudo salvo em: '+dados.ultimoSalvo;alert('Tudo salvo! Dia: '+dados.ultimoSalvo)}
+function openSaida(){let d=new Date();document.getElementById('saidaDia').value=d.getDate();document.getElementById('saidaMes').value=d.getMonth()+1;document.getElementById('saidaAno').value=d.getFullYear();document.getElementById('saidaModal').classList.add('open')}
+function closeSaida(){document.getElementById('saidaModal').classList.remove('open')}
+function confirmarSaida(){let v=parseFloat(String(document.getElementById('saidaValor').value).replace(',','.'))||0;let dia=parseInt(document.getElementById('saidaDia').value),mes=parseInt(document.getElementById('saidaMes').value),ano=parseInt(document.getElementById('saidaAno').value);if(!v){alert('Digite o valor da saída');return}if(!dia||!mes||!ano){alert('Data inválida');return}if(saidaContaSel==='Banco') dados.contas.banco-=v; else dados.contas.maos-=v; dados.trans.push({tipo:'Despesa',desc:document.getElementById('saidaDesc').value||'Saída de conta',quem:document.getElementById('saidaQuem').value,valor:v,dia,mes,ano,categoria:'Saída de conta',pagamento:saidaContaSel,status:'Pago',fixa:'Variável',conta:saidaContaSel});document.getElementById('saidaDesc').value='';document.getElementById('saidaQuem').value='';document.getElementById('saidaValor').value='';closeSaida();salvarTudo()}
 function tab(id,el){['dash','trans','plan','orc','ins'].forEach(x=>document.getElementById(x).style.display=x===id?'block':'none');document.querySelectorAll('header .chip').forEach(c=>c.classList.remove('on'));el.classList.add('on')}
 function setF(f,el){filtro=f;document.querySelectorAll('#trans .chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');render()}
 function openModal(){let d=new Date();document.getElementById('dia').value=d.getDate();document.getElementById('mes').value=d.getMonth()+1;document.getElementById('ano').value=d.getFullYear();document.getElementById('modal').classList.add('open')}
 function closeModal(){document.getElementById('modal').classList.remove('open')}
 function setTipo(t){tipo=t;document.getElementById('tDesp').className=t==='Despesa'?'btn g':'btn gh';document.getElementById('tRec').className=t==='Receita'?'btn g':'btn gh';document.getElementById('lblQuem').textContent=t==='Receita'?'De quem recebi':'Para quem paguei';if(t==='Receita'&&status==='A Vencer')status='A Receber';if(t==='Despesa'&&status==='A Receber')status='A Vencer'}
-function setStatus(s){status=s}function setFixa(f){fixa=f}
+function setStatus(s){status=s} function setConta(c){contaSel=c;document.getElementById('cBanco').className=c==='Banco'?'btn g':'btn gh';document.getElementById('cMaos').className=c==='Em mãos'?'btn g':'btn gh'} function setSaidaConta(c){saidaContaSel=c;document.getElementById('sBanco').className=c==='Banco'?'btn g':'btn gh';document.getElementById('sMaos').className=c==='Em mãos'?'btn g':'btn gh'}function setFixa(f){fixa=f}
 function hoje(){let d=new Date();document.getElementById('dia').value=d.getDate();document.getElementById('mes').value=d.getMonth()+1;document.getElementById('ano').value=d.getFullYear()}
 function ontem(){let d=new Date();d.setDate(d.getDate()-1);document.getElementById('dia').value=d.getDate();document.getElementById('mes').value=d.getMonth()+1;document.getElementById('ano').value=d.getFullYear()}
 let pickType='';function openPick(t){pickType=t;document.getElementById('pickTitle').textContent=t==='cat'?'Escolher categoria':'Escolher pagamento';let arr=t==='cat'?(tipo==='Receita'?catsR:catsD):pags;document.getElementById('pickList').innerHTML=arr.map(x=>`<button class="opt" onclick="choose('${x}')">${x}</button>`).join('');document.getElementById('pickModal').classList.add('open')}
 function choose(x){if(pickType==='cat'){categoria=x;document.getElementById('btnCat').textContent=x+' ▾'}else{pagamento=x;document.getElementById('btnPag').textContent=x+' ▾'}closePick()}
 function closePick(){document.getElementById('pickModal').classList.remove('open')}
-function salvar(){let v=parseFloat(String(document.getElementById('valor').value).replace(',','.'))||0;let dia=parseInt(document.getElementById('dia').value),mes=parseInt(document.getElementById('mes').value),ano=parseInt(document.getElementById('ano').value);if(!dia||!mes||!ano||dia<1||dia>31||mes<1||mes>12){alert('Data inválida. Digite DIA / MÊS / ANO');return}if(!categoria){alert('Escolha a categoria');return}if(!pagamento){alert('Escolha a forma de pagamento');return}dados.trans.push({tipo,desc:document.getElementById('desc').value,quem:document.getElementById('quem').value,valor:v,dia,mes,ano,categoria,pagamento,status,fixa});document.getElementById('desc').value='';document.getElementById('quem').value='';document.getElementById('valor').value='';categoria='';pagamento='';document.getElementById('btnCat').textContent='Escolher categoria ▾';document.getElementById('btnPag').textContent='Escolher pagamento ▾';closeModal();save()}
+function salvar(){let v=parseFloat(String(document.getElementById('valor').value).replace(',','.'))||0;let dia=parseInt(document.getElementById('dia').value),mes=parseInt(document.getElementById('mes').value),ano=parseInt(document.getElementById('ano').value);if(!dia||!mes||!ano||dia<1||dia>31||mes<1||mes>12){alert('Data inválida. Digite DIA / MÊS / ANO');return}if(!categoria){alert('Escolha a categoria');return}if(!pagamento){alert('Escolha a forma de pagamento');return}let isEf=(status==='Pago'||status==='Recebido'||status==='A Receber');
+ // Só movimenta conta se já foi pago/recebido, para bater com a receita
+ if(status==='Pago'||status==='Recebido'){ if(tipo==='Receita'){ if(contaSel==='Banco') dados.contas.banco+=v; else dados.contas.maos+=v; } else { if(contaSel==='Banco') dados.contas.banco-=v; else dados.contas.maos-=v; } }
+ dados.trans.push({tipo,desc:document.getElementById('desc').value,quem:document.getElementById('quem').value,valor:v,dia,mes,ano,categoria,pagamento,status,fixa,conta:contaSel});document.getElementById('desc').value='';document.getElementById('quem').value='';document.getElementById('valor').value='';categoria='';pagamento='';document.getElementById('btnCat').textContent='Escolher categoria ▾';document.getElementById('btnPag').textContent='Escolher pagamento ▾';closeModal();save()}
 let statusIdx=-1;
 function openStatusPicker(i){statusIdx=i;let t=dados.trans[i];let ops=t.tipo==='Receita'?['A Receber','Recebido','Em Atraso']:['A Vencer','Pago','Em Atraso'];document.getElementById('statusList').innerHTML=ops.map(s=>`<button class="opt" onclick="chooseStatus('${s}')">${s} ${autoStatus(t)===s?'✓':''}</button>`).join('');document.getElementById('statusModal').classList.add('open')}
 function closeStatusPicker(){document.getElementById('statusModal').classList.remove('open')}
