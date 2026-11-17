@@ -29,12 +29,12 @@
 </div>
 <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
 <button class="btn g" onclick="salvarTudo()" style="flex:1">💾 Salvar tudo</button>
-<button class="btn gh" onclick="openSaida()" style="flex:1">🏦 Saída de conta</button>
+<button class="btn g" onclick="openEntrada('Banco')" style="flex:1">⬇️ Entrada de conta</button><button class="btn gh" onclick="openSaida()" style="flex:1">🏦 Saída de conta</button>
 </div>
 <div id="salvoMsg" style="color:#2ee86b;font-size:12px;margin-top:6px"></div>
 <div style="display:flex;gap:8px;margin-top:8px">
-<div style="flex:1;background:#0d1d13;border-radius:14px;padding:12px"><span style="color:#a8c0b2;font-size:12px">🏦 CONTA BANCO</span><br><b id="saldoBanco">R$ 0,00</b></div>
-<div style="flex:1;background:#0d1d13;border-radius:14px;padding:12px"><span style="color:#a8c0b2;font-size:12px">💵 EM MÃOS</span><br><b id="saldoMaos">R$ 0,00</b></div>
+<div style="flex:1;background:#0d1d13;border-radius:14px;padding:12px"><span style="color:#a8c0b2;font-size:12px">🏦 CONTA BANCO</span><br><b id="saldoBanco">R$ 0,00</b><br><button class="btn g" style="padding:8px 10px;margin-top:8px;font-size:13px" onclick="openEntrada('Banco')">＋ Entrada Banco</button><button class="btn gh" style="padding:8px 10px;margin-top:8px;font-size:13px" onclick="openSaldoInicial()">⚙️ Ajustar</button></div>
+<div style="flex:1;background:#0d1d13;border-radius:14px;padding:12px"><span style="color:#a8c0b2;font-size:12px">💵 EM MÃOS</span><br><b id="saldoMaos">R$ 0,00</b><br><button class="btn g" style="padding:8px 10px;margin-top:8px;font-size:13px" onclick="openEntrada('Em mãos')">＋ Entrada Em mãos</button></div>
 </div>
 <div class="top"><button class="chip on" onclick="tab('dash',this)">📊 Visão Geral</button><button class="chip" onclick="tab('trans',this)">💸 Transações</button><button class="chip" onclick="tab('plan',this)">📋 Planilha</button><button class="chip" onclick="tab('orc',this)">🎯 Orçamentos</button><button class="chip" onclick="tab('ins',this)">💡 Insights</button></div></header>
 <div id="dash">
@@ -74,6 +74,13 @@
 <label>Saldo inicial Banco (R$)</label><input id="iniBanco" inputmode="decimal" placeholder="0,00">
 <label>Saldo inicial Em mãos (R$)</label><input id="iniMaos" inputmode="decimal" placeholder="0,00">
 <button class="btn g" style="width:100%;margin-top:10px" onclick="salvarSaldoInicial()">Salvar saldo inicial</button><button class="btn gh" style="width:100%;margin-top:8px" onclick="closeSaldoInicial()">Fechar</button></div></div>
+<div class="modal" id="entradaModal"><div class="sheet"><h2>⬇️ Entrada de conta</h2><p style="color:#a8c0b2">É aqui que você dá entrada para aparecer dinheiro no <b>Banco</b> ou <b>Em mãos</b>.</p>
+<label>Onde vai entrar?</label><div class="row"><button class="btn gh" id="eBanco" onclick="setEntradaConta('Banco')">🏦 Banco</button><button class="btn gh" id="eMaos" onclick="setEntradaConta('Em mãos')">💵 Em mãos</button></div>
+<label>Descrição</label><input id="entDesc" placeholder="Ex: Saldo inicial, comissão, venda">
+<label>De quem recebi</label><input id="entQuem" placeholder="Ex: K Brilho, cliente">
+<label>Valor da entrada (R$)</label><input id="entValor" inputmode="decimal" placeholder="0,00">
+<label>Data — DIA / MÊS / ANO</label><div class="row"><input id="entDia" inputmode="numeric" placeholder="Dia"><input id="entMes" inputmode="numeric" placeholder="Mês"><input id="entAno" inputmode="numeric" placeholder="Ano"></div>
+<button class="btn g" style="width:100%;margin-top:10px" onclick="confirmarEntrada()">Confirmar entrada</button><button class="btn gh" style="width:100%;margin-top:8px" onclick="closeEntrada()">Fechar</button></div></div>
 <div class="modal" id="saidaModal"><div class="sheet"><h2>🏦 Saída de conta</h2><p style="color:#a8c0b2">Tirar dinheiro do Banco ou Em mãos. Vira uma despesa e baixa o saldo na hora, para bater com a receita recebida.</p>
 <label>De onde vai sair?</label><div class="row"><button class="btn gh" id="sBanco" onclick="setSaidaConta('Banco')">🏦 Banco</button><button class="btn gh" id="sMaos" onclick="setSaidaConta('Em mãos')">💵 Em mãos</button></div>
 <label>Descrição</label><input id="saidaDesc" placeholder="Ex: Pagamento fornecedor, saque">
@@ -170,6 +177,11 @@ function ativarLicenca(){
 // mostra dias restantes no console / ao abrir
 setTimeout(()=>{verificarTrava()},50);
 function salvarTudo(){dados.ultimoSalvo=new Date().toLocaleString('pt-BR');save();document.getElementById('salvoMsg').textContent='✅ Tudo salvo em: '+dados.ultimoSalvo;alert('Tudo salvo! Dia: '+dados.ultimoSalvo)}
+let entradaContaSel='Banco';
+function setEntradaConta(c){entradaContaSel=c;document.getElementById('eBanco').className=c==='Banco'?'btn g':'btn gh';document.getElementById('eMaos').className=c==='Em mãos'?'btn g':'btn gh'}
+function openEntrada(conta){entradaContaSel=conta||'Banco';setEntradaConta(entradaContaSel);let d=new Date();document.getElementById('entDia').value=d.getDate();document.getElementById('entMes').value=d.getMonth()+1;document.getElementById('entAno').value=d.getFullYear();document.getElementById('entradaModal').classList.add('open')}
+function closeEntrada(){document.getElementById('entradaModal').classList.remove('open')}
+function confirmarEntrada(){let v=parseFloat(String(document.getElementById('entValor').value).replace(',','.'))||0;let dia=parseInt(document.getElementById('entDia').value),mes=parseInt(document.getElementById('entMes').value),ano=parseInt(document.getElementById('entAno').value);if(!v){alert('Digite o valor da entrada');return}if(!dia||!mes||!ano){alert('Data inválida');return}dados.trans.push({tipo:'Receita',desc:document.getElementById('entDesc').value||'Entrada de conta',quem:document.getElementById('entQuem').value,valor:v,dia,mes,ano,categoria:'Entrada',pagamento:entradaContaSel,status:'Recebido',fixa:'Variável',conta:entradaContaSel});document.getElementById('entDesc').value='';document.getElementById('entQuem').value='';document.getElementById('entValor').value='';closeEntrada();salvarTudo()}
 function openSaida(){let d=new Date();document.getElementById('saidaDia').value=d.getDate();document.getElementById('saidaMes').value=d.getMonth()+1;document.getElementById('saidaAno').value=d.getFullYear();document.getElementById('saidaModal').classList.add('open')}
 function closeSaida(){document.getElementById('saidaModal').classList.remove('open')}
 function confirmarSaida(){let v=parseFloat(String(document.getElementById('saidaValor').value).replace(',','.'))||0;let dia=parseInt(document.getElementById('saidaDia').value),mes=parseInt(document.getElementById('saidaMes').value),ano=parseInt(document.getElementById('saidaAno').value);if(!v){alert('Digite o valor da saída');return}if(!dia||!mes||!ano){alert('Data inválida');return}dados.trans.push({tipo:'Despesa',desc:document.getElementById('saidaDesc').value||'Saída de conta',quem:document.getElementById('saidaQuem').value,valor:v,dia,mes,ano,categoria:'Saída de conta',pagamento:saidaContaSel,status:'Pago',fixa:'Variável',conta:saidaContaSel});document.getElementById('saidaDesc').value='';document.getElementById('saidaQuem').value='';document.getElementById('saidaValor').value='';closeSaida();salvarTudo()}
