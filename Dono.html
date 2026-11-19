@@ -1,0 +1,255 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Meu Norte Financeiro</title><style>
+*{box-sizing:border-box}body{margin:0;background:#050f0a;color:#fff;font-family:system-ui,-apple-system,Arial}header{padding:18px 16px 8px;background:linear-gradient(180deg,#0a2317,#050f0a)}h1{margin:2px 0;font-size:34px;letter-spacing:-.5px}h1 i{color:#2ee86b;font-style:normal}.sub{color:#a8c0b2;font-size:14px}.top{display:flex;gap:8px;overflow:auto;padding:12px 0}.chip{white-space:nowrap;padding:10px 16px;border-radius:999px;background:#122a1d;color:#d8e8dd;border:0}.chip.on{background:#2ee86b;color:#06210f;font-weight:800}.hero{margin:12px 16px;background:linear-gradient(135deg,#123324,#0a1f14);border:1px solid #21492f;border-radius:22px;padding:20px;box-shadow:0 12px 30px rgba(0,0,0,.35)}.hero span{font-size:12px;letter-spacing:1.5px;color:#9fd8ae}.hero b{font-size:48px;display:block;line-height:1}.hero small{color:#9fb3a8}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px}.card{background:#101f17;border:1px solid #1c3525;border-radius:18px;padding:14px}.card i{font-style:normal;font-size:18px}.card span{color:#93a89b;font-size:11px;display:block;margin:4px 0}.card b{font-size:20px}.green{color:#2ee86b}.red{color:#ff6b6b}.yellow{color:#ffcf3f}.sec{margin:16px;background:#101f17;border-radius:20px;padding:16px}.sec h3{margin:0 0 8px}.bar{height:10px;background:#0a1f14;border-radius:99px;overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;background:#2ee86b}canvas{width:100%;height:150px}.item{background:#0d1d13;border-radius:14px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;gap:8px}.item small{color:#9fb3a8}.status{padding:6px 10px;border-radius:99px;font-size:12px;font-weight:700;border:0}.venc{background:#ffcf3f;color:#3a2a00}.pago{background:#2ee86b;color:#06210f}.atraso{background:#ff4d4d;color:#fff}.btn{padding:14px 16px;border-radius:12px;font-weight:700;border:0}.g{background:#2ee86b;color:#06210f}.gh{background:#182d21;color:#fff;border:1px solid #2a4a38}.fab{position:fixed;right:16px;bottom:18px;background:#2ee86b;color:#06210f;padding:16px 20px;border-radius:999px;font-weight:800;border:0;box-shadow:0 10px 24px rgba(46,232,107,.35);z-index:20}.modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:flex-end;justify-content:center;z-index:50}.modal.open{display:flex}.sheet{background:#0f1e15;width:100%;max-width:560px;max-height:90vh;overflow:auto;border-radius:22px 22px 0 0;padding:20px}.sheet input{width:100%;padding:16px;border-radius:12px;border:1px solid #2a4a38;background:#07120d;color:#fff;margin:6px 0;font-size:16px}.row{display:flex;gap:8px}.row>*{flex:1}.opt{width:100%;text-align:left;background:#122a1d;color:#fff;padding:16px;border-radius:12px;margin:6px 0;font-size:16px;border:0}label{font-size:13px;color:#9fb3a8}table{width:100%;border-collapse:collapse}td,th{padding:10px;border-bottom:1px solid #22382c;text-align:left;font-size:13px}.insight{background:#0a1f14;border-left:4px solid #2ee86b;padding:12px;border-radius:10px;margin:8px 0;font-size:14px}
+</style></head><body><style>#lockScreen{display:none !important;}</style>
+<div id="donoGate" style="position:fixed;inset:0;background:#050f0a;z-index:999999;display:flex;align-items:center;justify-content:center;padding:20px"><div style="max-width:420px;background:#101f17;border-radius:20px;padding:24px;width:100%"><h2>👑 Área do Dono</h2><p style="color:#a8c0b2">Só o dono entra aqui. O cliente nunca vê essa tela.</p><label>Senha do dono</label><input id="senhaDono" type="password" placeholder="Senha" style="width:100%;padding:14px;border-radius:12px;border:1px solid #2a4a38;background:#07120d;color:#fff"><button class="btn g" style="width:100%;margin-top:10px" onclick="entrarDono()">Entrar como dono</button><p id="msgDono" style="color:#ff8a8a"></p><p style="color:#a8c0b2;font-size:13px">Senha inicial: <b>joao123</b></p></div></div>
+<div id="painelDono" style="display:none;margin:16px;background:#101f17;border:1px solid #2ee86b;border-radius:18px;padding:16px"><h3>👑 Painel do Dono — configurar para o cliente</h3>
+<label>Nome / Logomarca do cliente (texto)</label><input id="cfgNome" placeholder="Ex: Financeiro da Maria" style="width:100%;padding:14px;border-radius:12px;border:1px solid #2a4a38;background:#07120d;color:#fff">
+<label>Cor da marca</label><input id="cfgCor" type="color" value="#2ee86b" style="width:100%">
+<button class="btn g" onclick="salvarCfgDono()">Salvar marca do cliente</button>
+<hr style="border:1px solid #22382c">
+<h4>🔑 Gerar licença para o cliente</h4><label>ID do celular do cliente</label><input id="genDev" placeholder="Cole o ID do cliente" style="width:100%;padding:14px;border-radius:12px;border:1px solid #2a4a38;background:#07120d;color:#fff"><div class="row"><button class="btn gh" onclick="gerarLicDono('MENSAL')">Mensal</button><button class="btn gh" onclick="gerarLicDono('VITALICIA')">Vitalícia</button></div><div id="genOutDono" style="background:#07120d;padding:12px;border-radius:12px;color:#2ee86b;font-weight:700;word-break:break-all;margin-top:8px"></div><button class="btn gh" onclick="copiarLicDono()">📋 Copiar licença</button>
+<p style="color:#a8c0b2;font-size:13px">Depois de configurar, mande para o cliente só o link: <b>/cliente/</b> — lá não tem nada de dono.</p>
+</div>
+<div id="lockScreen" style="display:none;position:fixed;inset:0;background:#050f0a;z-index:9999;overflow:auto;padding:20px">
+<div style="max-width:520px;margin:20px auto;background:#101f17;border-radius:20px;padding:22px;border:1px solid #2a4a38">
+<h2 style="margin:0">🔒 Período de teste encerrado</h2>
+<p style="color:#a8c0b2">Seu teste de 24 horas acabou. Para continuar usando, peça sua licença ao fornecedor.</p>
+<div style="background:#0a1f14;border-radius:12px;padding:12px;font-size:13px;line-height:1.7">
+<b>Seu ID do celular:</b><br><span id="myDeviceId" style="color:#2ee86b;word-break:break-all"></span><br>
+<span style="color:#a8c0b2">Copie esse ID e envie para quem te vendeu o app. Só ele tem o gerador de licença.</span><br>
+<span id="trialInfo"></span>
+</div>
+<label style="margin-top:14px;display:block">Cole sua licença aqui</label>
+<input id="licKey" placeholder="Ex: MENSAL-XXXX-XXXX ou VITALICIA-XXXX-XXXX" style="width:100%;padding:16px;border-radius:12px;border:1px solid #2a4a38;background:#07120d;color:#fff;margin:6px 0">
+<button class="btn g" style="width:100%" onclick="ativarLicenca()">🔓 Liberar app</button>
+<p id="licMsg" style="color:#ff8a8a"></p>
+</div></div>
+<header><div style="color:#2ee86b;font-size:11px;letter-spacing:2px">✦ COMEÇANDO DO ZERO • 100% SEU</div><h1>Meu Norte <i>Financeiro</i></h1><div class="sub">Sua bússola para receber, pagar e planejar.</div>
+<div style="margin-top:12px;background:#0d1d13;border:1px solid #21492f;border-radius:16px;padding:14px">
+<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:15px">👤 <span id="perfilNome">Meu cabeçalho — toque para preencher</span></b><button class="btn gh" style="padding:8px 12px" onclick="openPerfil()">✏️ Editar</button></div>
+<div id="perfilInfo" style="color:#a8c0b2;font-size:13px;margin-top:6px;line-height:1.6">Nome, endereço, telefone e CPF/CNPJ aparecem aqui e no topo.</div>
+</div>
+<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+<button class="btn g" onclick="salvarTudo()" style="flex:1">💾 Salvar tudo</button>
+<button class="btn g" onclick="openEntrada('Banco')" style="flex:1">⬇️ Entrada de conta</button><button class="btn gh" onclick="openSaida()" style="flex:1">🏦 Saída de conta</button>
+</div>
+<div id="salvoMsg" style="color:#2ee86b;font-size:12px;margin-top:6px"></div>
+<div style="display:flex;gap:8px;margin-top:8px">
+<div style="flex:1;background:#0d1d13;border-radius:14px;padding:12px"><span style="color:#a8c0b2;font-size:12px">🏦 CONTA BANCO</span><br><b id="saldoBanco">R$ 0,00</b><br><button class="btn g" style="padding:8px 10px;margin-top:8px;font-size:13px" onclick="openEntrada('Banco')">＋ Entrada Banco</button><button class="btn gh" style="padding:8px 10px;margin-top:8px;font-size:13px" onclick="openSaldoInicial()">⚙️ Ajustar</button></div>
+<div style="flex:1;background:#0d1d13;border-radius:14px;padding:12px"><span style="color:#a8c0b2;font-size:12px">💵 EM MÃOS</span><br><b id="saldoMaos">R$ 0,00</b><br><button class="btn g" style="padding:8px 10px;margin-top:8px;font-size:13px" onclick="openEntrada('Em mãos')">＋ Entrada Em mãos</button></div>
+</div>
+<div class="top"><button class="chip on" onclick="tab('dash',this)">📊 Visão Geral</button><button class="chip" onclick="tab('trans',this)">💸 Transações</button><button class="chip" onclick="tab('plan',this)">📋 Planilha</button><button class="chip" onclick="tab('orc',this)">🎯 Orçamentos</button><button class="chip" onclick="tab('ins',this)">💡 Insights</button></div></header>
+<div id="dash">
+<div class="hero"><span>SALDO • RECEBIDO − PAGO</span><b id="saldo">R$ 0,00</b><small id="count">0 transações • Nenhuma receita entra no total de Pago.</small><div style="margin-top:12px"><div style="display:flex;justify-content:space-between;font-size:12px"><span>Meta de economia</span><span id="metaPct">0%</span></div><div class="bar"><i id="metaBar" style="width:0%"></i></div></div></div>
+<div class="sec" id="bancosSec"><div style="display:flex;justify-content:space-between;align-items:center"><h3>🏦 Meus Bancos</h3><button class="btn g" style="padding:10px 14px" onclick="openBanco()">＋ Adicionar banco</button></div>
+<p style="color:#a8c0b2;font-size:13px">Cada banco com seu saldo. O total unifica tudo.</p>
+<div style="background:linear-gradient(135deg,#123324,#0a1f14);border-radius:16px;padding:16px;margin:10px 0"><span style="color:#9fd8ae;font-size:12px">SALDO TOTAL UNIFICADO • BANCOS + EM MÃOS</span><br><b id="saldoTotal" style="font-size:32px">R$ 0,00</b><br><small id="saldoTotalDet" style="color:#a8c0b2"></small></div>
+<div id="bancosList"></div></div>
+<div class="grid">
+<div class="card"><i>⬇️</i><span>RECEBIDO • Só receitas</span><b class="green" id="recebido">R$ 0,00</b></div>
+<div class="card"><i>⬆️</i><span>PAGO • Só despesas pagas</span><b id="pago">R$ 0,00</b></div>
+<div class="card"><i>🕐</i><span>A VENCER • Só despesas</span><b class="yellow" id="vencer">R$ 0,00</b></div>
+<div class="card"><i>💰</i><span>A RECEBER • Só receitas</span><b id="areceber">R$ 0,00</b></div>
+<div class="card" style="grid-column:1/-1;border-color:#ff4d4d66"><i>⚠️</i><span>EM ATRASO • Só despesas</span><b class="red" id="atraso">R$ 0,00</b></div>
+</div>
+<div class="sec"><h3>📈 Por categoria</h3><canvas id="chart" width="600" height="260"></canvas><div id="catList"></div></div>
+<div class="sec"><h3>⏰ Próximos vencimentos</h3><div id="prox"></div></div>
+<div class="sec"><h3>💡 Seu Norte hoje</h3><div id="norte"></div></div>
+</div>
+<div id="trans" style="display:none;padding:0 16px"><h3>Transações</h3>
+<button class="btn g" style="width:100%;font-size:17px;padding:18px" onclick="openModal()">✏️ + Escrever nova transação</button>
+<p style="color:#a8c0b2;font-size:13px">Toque no botão verde para escrever sua transação: descrição, para quem paguei, valor, data, categoria, pagamento e status.</p><div class="top"><button class="chip on" onclick="setF('all',this)">Todos</button><button class="chip" onclick="setF('venc',this)">A Vencer</button><button class="chip" onclick="setF('pago',this)">Pago</button><button class="chip" onclick="setF('atraso',this)">Em Atraso</button></div><div id="lista"></div><button class="btn gh" onclick="limpar()">Limpar tudo</button><div style="height:90px"></div></div>
+<div id="plan" style="display:none;padding:0 16px"><h3>Planilha</h3><div style="overflow:auto;background:#101f17;border-radius:16px"><table><thead><tr><th>Data</th><th>Descrição</th><th>Para quem</th><th>Tipo</th><th>Status</th><th>Valor</th></tr></thead><tbody id="tbody"></tbody></table></div><p id="totplan"></p></div>
+<div id="orc" style="display:none;padding:0 16px"><h3>🎯 Orçamentos & Meta</h3><div class="sec"><label>Meta de economia mensal (R$)</label><input id="meta" type="number" placeholder="Ex: 500"><button class="btn g" onclick="salvarMeta()">Salvar meta</button><p id="metatxt"></p><label>Orçamento Alimentação (R$)</label><input id="orcAlim" type="number" placeholder="0"><button class="btn g" onclick="salvarOrc()">Salvar orçamento</button><p id="orctxt"></p><div id="orcBar"></div></div></div>
+<div id="ins" style="display:none;padding:0 16px"><h3>💡 Insights automáticos</h3><div id="insights"></div></div>
+<button class="fab" onclick="openModal()">+ Nova transação</button>
+<div class="modal" id="modal"><div class="sheet"><h2 id="modalTitle">✨ Nova transação</h2>
+<div class="row"><button class="btn g" id="tDesp" onclick="setTipo('Despesa')">Despesa</button><button class="btn gh" id="tRec" onclick="setTipo('Receita')">Receita</button></div>
+<label>Descrição</label><input id="desc" placeholder="Ex: Compras do mês">
+<label id="lblQuem">Para quem paguei</label><input id="quem" placeholder="Ex: Sup. Santo Antônio" list="hist"><datalist id="hist"></datalist>
+<label>Valor (R$)</label><input id="valor" inputmode="decimal" placeholder="0,00">
+<label>Data — DIA / MÊS / ANO</label><div class="row"><input id="dia" inputmode="numeric" placeholder="Dia"><input id="mes" inputmode="numeric" placeholder="Mês"><input id="ano" inputmode="numeric" placeholder="Ano"></div>
+<div class="row"><button class="btn gh" onclick="hoje()">Hoje</button><button class="btn gh" onclick="ontem()">Ontem</button></div>
+<label>Categoria</label><button class="btn gh" style="width:100%;text-align:left" id="btnCat" onclick="openPick('cat')">Escolher categoria ▾</button>
+<label>Forma de pagamento</label><button class="btn gh" style="width:100%;text-align:left" id="btnPag" onclick="openPick('pag')">Escolher pagamento ▾</button>
+<label>Conta — Receita entra aqui, despesa sai daqui</label><div class="row"><button class="btn gh" id="cBanco" onclick="setConta('Banco')">🏦 Banco</button><button class="btn gh" id="cMaos" onclick="setConta('Em mãos')">💵 Em mãos</button></div>
+<label>Status</label><div class="row"><button class="btn gh" onclick="setStatus('A Vencer')">A Vencer</button><button class="btn gh" onclick="setStatus('Pago')">Pago</button><button class="btn gh" onclick="setStatus('Em Atraso')">Em Atraso</button></div>
+<label>Fixa / Variável</label><div class="row"><button class="btn gh" onclick="setFixa('Fixa')">Fixa</button><button class="btn gh" onclick="setFixa('Variável')">Variável</button></div>
+<button id="btnSalvarTrans" class="btn g" style="width:100%;margin-top:12px" onclick="salvar()">Adicionar transação</button><button class="btn gh" style="width:100%;margin-top:8px" onclick="closeModal()">Fechar</button></div></div>
+<div class="modal" id="saldoModal"><div class="sheet"><h2>⚙️ Saldo inicial</h2><p style="color:#a8c0b2">Quanto você já tinha no Banco e Em mãos antes de começar? A partir daí, toda receita Recebida entra e toda despesa Paga sai automaticamente.</p>
+<label>Saldo inicial Banco (R$)</label><input id="iniBanco" inputmode="decimal" placeholder="0,00">
+<label>Saldo inicial Em mãos (R$)</label><input id="iniMaos" inputmode="decimal" placeholder="0,00">
+<button class="btn g" style="width:100%;margin-top:10px" onclick="salvarSaldoInicial()">Salvar saldo inicial</button><button class="btn gh" style="width:100%;margin-top:8px" onclick="closeSaldoInicial()">Fechar</button></div></div>
+<div class="modal" id="bancoModal"><div class="sheet"><h2>🏦 Adicionar / Editar banco</h2>
+<label>Nome do banco</label><input id="bancoNome" placeholder="Ex: Nubank, Banco do Brasil, Caixa, Bradesco">
+<label>Agência / Conta (opcional)</label><input id="bancoAg" placeholder="Ex: Ag 1234 - Conta 56789">
+<label>Saldo inicial neste banco (R$)</label><input id="bancoSaldo" inputmode="decimal" placeholder="0,00">
+<button class="btn g" style="width:100%;margin-top:10px" onclick="salvarBanco()">Salvar banco</button><button class="btn gh" style="width:100%;margin-top:8px" onclick="closeBanco()">Fechar</button></div></div>
+<div class="modal" id="entradaModal"><div class="sheet"><h2>⬇️ Entrada de conta</h2><p style="color:#a8c0b2">É aqui que você dá entrada para aparecer dinheiro no <b>Banco</b> ou <b>Em mãos</b>.</p>
+<label>Onde vai entrar?</label><div class="row"><button class="btn gh" id="eBanco" onclick="setEntradaConta('Banco')">🏦 Banco</button><button class="btn gh" id="eMaos" onclick="setEntradaConta('Em mãos')">💵 Em mãos</button></div>
+<label>Descrição</label><input id="entDesc" placeholder="Ex: Saldo inicial, comissão, venda">
+<label>De quem recebi</label><input id="entQuem" placeholder="Ex: K Brilho, cliente">
+<label>Valor da entrada (R$)</label><input id="entValor" inputmode="decimal" placeholder="0,00">
+<label>Data — DIA / MÊS / ANO</label><div class="row"><input id="entDia" inputmode="numeric" placeholder="Dia"><input id="entMes" inputmode="numeric" placeholder="Mês"><input id="entAno" inputmode="numeric" placeholder="Ano"></div>
+<button class="btn g" style="width:100%;margin-top:10px" onclick="confirmarEntrada()">Confirmar entrada</button><button class="btn gh" style="width:100%;margin-top:8px" onclick="closeEntrada()">Fechar</button></div></div>
+<div class="modal" id="saidaModal"><div class="sheet"><h2>🏦 Saída de conta</h2><p style="color:#a8c0b2">Tirar dinheiro do Banco ou Em mãos. Vira uma despesa e baixa o saldo na hora, para bater com a receita recebida.</p>
+<label>De onde vai sair?</label><div class="row"><button class="btn gh" id="sBanco" onclick="setSaidaConta('Banco')">🏦 Banco</button><button class="btn gh" id="sMaos" onclick="setSaidaConta('Em mãos')">💵 Em mãos</button></div>
+<label>Descrição</label><input id="saidaDesc" placeholder="Ex: Pagamento fornecedor, saque">
+<label>Para quem paguei</label><input id="saidaQuem" placeholder="Ex: Sup. Santo Antônio">
+<label>Valor da saída (R$)</label><input id="saidaValor" inputmode="decimal" placeholder="0,00">
+<label>Data — DIA / MÊS / ANO</label><div class="row"><input id="saidaDia" inputmode="numeric" placeholder="Dia"><input id="saidaMes" inputmode="numeric" placeholder="Mês"><input id="saidaAno" inputmode="numeric" placeholder="Ano"></div>
+<button class="btn g" style="width:100%;margin-top:10px" onclick="confirmarSaida()">Confirmar saída</button><button class="btn gh" style="width:100%;margin-top:8px" onclick="closeSaida()">Fechar</button></div></div>
+<div class="modal" id="perfilModal"><div class="sheet"><h2>👤 Meu cabeçalho</h2><p style="color:#a8c0b2">Preencha uma vez, fica salvo e aparece no topo.</p>
+<label>Nome / Nome da empresa</label><input id="pNome" placeholder="Ex: Seu nome ou empresa">
+<label>Endereço</label><input id="pEnd" placeholder="Ex: Rua, número, bairro, cidade">
+<label>Telefone / WhatsApp</label><input id="pTel" inputmode="tel" placeholder="Ex: (84) 99999-9999">
+<label>CPF ou CNPJ</label><input id="pDoc" inputmode="numeric" placeholder="Ex: CPF ou CNPJ">
+<button class="btn g" style="width:100%;margin-top:10px" onclick="salvarPerfil()">Salvar cabeçalho</button><button class="btn gh" style="width:100%;margin-top:8px" onclick="closePerfil()">Fechar</button></div></div>
+<div class="modal" id="statusModal"><div class="sheet"><h3>Alterar status</h3><p style="color:#a8c0b2">Toque no novo status:</p><div id="statusList"></div><button class="btn gh" style="width:100%" onclick="closeStatusPicker()">Fechar</button></div></div>
+<div class="modal" id="pickModal"><div class="sheet"><h3 id="pickTitle">Escolher</h3><div id="pickList"></div><button class="btn gh" style="width:100%" onclick="closePick()">Fechar</button></div></div>
+<script>
+let dados=JSON.parse(localStorage.getItem('meu-norte-v4')||'{"trans":[],"meta":0,"orcAlim":0,"perfil":{"nome":"","end":"","tel":"","doc":""}}');
+if(!dados.perfil) dados.perfil={nome:'',end:'',tel:'',doc:''}; if(dados.contas==null) dados.contas={banco:0,maos:0}; if(!dados.saldoInicial) dados.saldoInicial={banco:0,maos:0}; if(!dados.bancos) dados.bancos=[{nome:'Banco',saldoInicial:dados.saldoInicial.banco||0,cor:'#2ee86b'}]; if(!dados.ultimoSalvo) dados.ultimoSalvo='';
+let editIdx=-1;
+let contaSel='Banco', saidaContaSel='Banco';
+let tipo='Despesa',status='A Vencer',fixa='Variável',categoria='',pagamento='',filtro='all';
+const catsD=['Moradia','Alimentação','Transporte','Lazer','Saúde','Compras','Educação','Assinaturas','Outros'],catsR=['Salário','Venda','Extra','Outros'],pags=['Pix','Dinheiro','Cartão de Crédito','Cartão de Débito','Boleto','Transferência','Outros'];
+function fmt(v){return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
+function save(){localStorage.setItem('meu-norte-v4',JSON.stringify(dados));render()}
+function autoStatus(t){let h=new Date();h.setHours(0,0,0,0);let d=new Date(t.ano,t.mes-1,t.dia);if(d<h&&(t.status==='A Vencer'||t.status==='A Receber'))return 'Em Atraso';return t.status}
+function render(){
+ let recP=0,pago=0,venc=0,arec=0,atr=0,porCat={};
+ dados.trans.forEach(t=>{let st=autoStatus(t),v=parseFloat(t.valor)||0;if(t.tipo==='Receita'){if(st==='Recebido'||st==='Pago')recP+=v;else arec+=v}else{if(st==='Pago')pago+=v;else if(st==='Em Atraso')atr+=v;else venc+=v;porCat[t.categoria]=(porCat[t.categoria]||0)+v}});
+ document.getElementById('saldo').textContent=fmt(recP-pago);document.getElementById('recebido').textContent=fmt(recP);document.getElementById('pago').textContent=fmt(pago);document.getElementById('vencer').textContent=fmt(venc);document.getElementById('areceber').textContent=fmt(arec);document.getElementById('atraso').textContent=fmt(atr);document.getElementById('count').textContent=dados.trans.length+' transações • Nenhuma receita entra no total de Pago.';
+ let pct=dados.meta?Math.min(100,Math.round((recP-pago)/dados.meta*100)):0;document.getElementById('metaBar').style.width=pct+'%';document.getElementById('metaPct').textContent=pct+'% da meta';
+ // chart
+ let c=document.getElementById('chart'),ctx=c.getContext('2d');ctx.clearRect(0,0,600,260);let keys=Object.keys(porCat),max=Math.max(1,...Object.values(porCat));ctx.fillStyle='#2ee86b';keys.forEach((k,i)=>{let h=porCat[k]/max*180;ctx.fillRect(20+i*70,220-h,44,h);ctx.fillStyle='#d8e8dd';ctx.font='12px Arial';ctx.fillText(k.slice(0,9),20+i*70,240);ctx.fillStyle='#2ee86b'});
+ document.getElementById('catList').innerHTML=keys.map(k=>`<div style="display:flex;justify-content:space-between;font-size:14px;margin:6px 0"><span>${k}</span><b>${fmt(porCat[k])}</b></div>`).join('')||'<p style="color:#9fb3a8">Adicione uma transação para ver o gráfico.</p>';
+ let lista=dados.trans.filter(t=>{let st=autoStatus(t);if(filtro==='all')return true;if(filtro==='venc')return st==='A Vencer'||st==='A Receber';if(filtro==='pago')return st==='Pago'||st==='Recebido';return st==='Em Atraso'});
+ document.getElementById('lista').innerHTML=lista.map(t=>{let st=autoStatus(t),cls=st==='Pago'||st==='Recebido'?'pago':st==='Em Atraso'?'atraso':'venc',idx=dados.trans.indexOf(t);return `<div class="item"><div><b>${t.desc||'(sem descrição)'}</b><br><small>${t.quem||''} • ${t.dia}/${t.mes}/${t.ano} • ${t.categoria}</small></div><div style="text-align:right"><b style="color:${t.tipo==='Receita'?'#2ee86b':'#fff'}">${t.tipo==='Receita'?'+':'-'} ${fmt(parseFloat(t.valor)||0)}</b><br><button class="status ${cls}" onclick="openStatusPicker(${idx})">${st}</button> <button onclick="editar(${idx})" style="background:#2ee86b;color:#06210f;border:0;border-radius:8px;padding:4px 8px;font-weight:700">Editar</button> <button onclick="excluir(${idx})" style="background:none;color:#ff8a8a;border:0">Excluir</button></div></div>`}).join('')||'<p>Nenhuma transação ainda.</p>';
+ document.getElementById('tbody').innerHTML=dados.trans.map(t=>`<tr><td>${t.dia}/${t.mes}/${t.ano}</td><td>${t.desc}</td><td>${t.quem||''}</td><td>${t.tipo}</td><td>${autoStatus(t)}</td><td>${fmt(parseFloat(t.valor)||0)}</td></tr>`).join('');
+ document.getElementById('totplan').textContent='Total Recebido: '+fmt(recP)+' • Total Pago: '+fmt(pago);
+ let prox=dados.trans.filter(t=>autoStatus(t)==='A Vencer'||autoStatus(t)==='A Receber').sort((a,b)=>new Date(a.ano,a.mes-1,a.dia)-new Date(b.ano,b.mes-1,b.dia)).slice(0,5);
+ document.getElementById('prox').innerHTML=prox.map(t=>`<div class="item"><span>${t.desc} • ${t.quem||''} • ${t.dia}/${t.mes}/${t.ano}</span><b>${fmt(parseFloat(t.valor)||0)}</b></div>`).join('')||'<p>Nenhum vencimento próximo.</p>';
+ let top=keys.sort((a,b)=>porCat[b]-porCat[a])[0];
+ let norte=dados.trans.length?`Sua maior categoria é <b>${top||'-'}</b> (${fmt(porCat[top]||0)}). ${atr>0?`Atenção: você tem ${fmt(atr)} em atraso.`:'Você está no controle, nenhum atraso!'}`:'Lance sua primeira transação para eu te dar o norte. Comece pelas fixas do mês.';
+ document.getElementById('norte').innerHTML=`<div class="insight">${norte}</div>`;
+ document.getElementById('insights').innerHTML=`<div class="insight">💰 Saldo: ${fmt(recP-pago)}</div><div class="insight">🏆 Maior gasto: ${top||'-'} — ${fmt(porCat[top]||0)}</div><div class="insight">${atr>0?'⚠️ Resolva primeiro o que está em atraso, depois pense em economizar.':'✅ Sem atrasos. Continue assim!'}</div><div class="insight">🎯 Meta de economia: ${dados.meta?fmt(dados.meta):'defina sua meta em Orçamentos'}</div>`;
+ document.getElementById('metatxt').textContent=dados.meta?('Meta: '+fmt(dados.meta)):'';
+ document.getElementById('orctxt').textContent=dados.orcAlim?('Orçamento Alimentação: '+fmt(dados.orcAlim)):'';
+ let alim=porCat['Alimentação']||0;document.getElementById('orcBar').innerHTML=dados.orcAlim?`<p>Alimentação: ${fmt(alim)} de ${fmt(dados.orcAlim)}</p><div class="bar"><i style="width:${Math.min(100,alim/dados.orcAlim*100)}%"></i></div>`:'';
+ let pf=dados.perfil||{nome:'',end:'',tel:'',doc:''};
+ document.getElementById('perfilNome').textContent=pf.nome||'Meu cabeçalho — toque para preencher';
+ document.getElementById('perfilInfo').innerHTML=(pf.nome?('🏷️ '+pf.nome+'<br>'):'')+(pf.end?('📍 '+pf.end+'<br>'):'')+(pf.tel?('📞 '+pf.tel+'<br>'):'')+(pf.doc?('🪪 CPF/CNPJ: '+pf.doc):'');
+ recalcularContas();
+ document.getElementById('saldoBanco').textContent=fmt(dados.contas.banco||0);
+ document.getElementById('saldoMaos').textContent=fmt(dados.contas.maos||0);
+ if(dados.ultimoSalvo) document.getElementById('salvoMsg').textContent='✅ Salvo em: '+dados.ultimoSalvo;
+ let hist=[...new Set(dados.trans.map(t=>t.quem).filter(Boolean))];document.getElementById('hist').innerHTML=hist.map(h=>`<option value="${h}">`).join('');
+}
+function openPerfil(){document.getElementById('pNome').value=dados.perfil.nome||'';document.getElementById('pEnd').value=dados.perfil.end||'';document.getElementById('pTel').value=dados.perfil.tel||'';document.getElementById('pDoc').value=dados.perfil.doc||'';document.getElementById('perfilModal').classList.add('open')}
+function closePerfil(){document.getElementById('perfilModal').classList.remove('open')}
+function salvarPerfil(){dados.perfil={nome:document.getElementById('pNome').value,end:document.getElementById('pEnd').value,tel:document.getElementById('pTel').value,doc:document.getElementById('pDoc').value};closePerfil();save()}
+
+// ===== TRAVA / LICENÇA - não mexe em nada do app, só bloqueia por cima =====
+const SEGREDO='MEU-NORTE-2026-SEGREDO';
+let deviceId=localStorage.getItem('device_id');
+if(!deviceId){deviceId='CEL-'+Math.random().toString(36).slice(2,8).toUpperCase()+'-'+Date.now().toString(36).toUpperCase();localStorage.setItem('device_id',deviceId);}
+let trialStart=parseInt(localStorage.getItem('trial_start')||'0');
+if(!trialStart){trialStart=Date.now();localStorage.setItem('trial_start',String(trialStart));}
+const TRIAL_DIAS=1; // 24 HORAS // <-- MUDE AQUI: 1 = 24 horas, 8 = 8 dias
+function hashStr(s){let h=5381;for(let i=0;i<s.length;i++){h=((h*33)^s.charCodeAt(i))>>>0}return h.toString(36).toUpperCase().padStart(6,'0')}
+function gerarChave(dev,tipo){let a=hashStr(dev+'|'+tipo+'|'+SEGREDO);let b=hashStr(tipo+'|'+dev+'|'+SEGREDO+'X');return tipo+'-'+a+'-'+b}
+function licValida(){
+ let lic=JSON.parse(localStorage.getItem('licenca')||'null');if(!lic)return false;
+ if(lic.key!==gerarChave(deviceId,lic.tipo))return false;
+ if(lic.tipo==='MENSAL'){let ativ=lic.ativado||0;if(Date.now()-ativ>30*24*60*60*1000)return false}
+ return true;
+}
+function verificarTrava(){
+ let diasUsados=(Date.now()-trialStart)/(24*60*60*1000);
+ let faltam=Math.max(0,TRIAL_DIAS-diasUsados);
+ if(licValida()){document.getElementById('lockScreen').style.display='none';return true}
+ if(faltam>0){document.getElementById('lockScreen').style.display='none';return true}
+ // travado
+ document.getElementById('lockScreen').style.display='block';
+ document.getElementById('myDeviceId').textContent=deviceId;
+ document.getElementById('trialInfo').textContent='Teste de 24 horas encerrado.';
+ return false;
+}
+function ativarLicenca(){
+ let k=(document.getElementById('licKey').value||'').trim().toUpperCase();
+ let tipo=k.startsWith('VITALICIA')?'VITALICIA':k.startsWith('MENSAL')?'MENSAL':null;
+ if(!tipo||k!==gerarChave(deviceId,tipo)){document.getElementById('licMsg').textContent='Licença inválida para este celular. Confira o ID.';return}
+ localStorage.setItem('licenca',JSON.stringify({key:k,tipo,ativado:Date.now()}));
+ document.getElementById('licMsg').textContent='';verificarTrava();alert('App liberado! '+(tipo==='VITALICIA'?'Licença vitalícia.':'Licença mensal - 30 dias.'));
+}
+// mostra dias restantes no console / ao abrir
+setTimeout(()=>{verificarTrava()},50);
+function salvarTudo(){dados.ultimoSalvo=new Date().toLocaleString('pt-BR');save();document.getElementById('salvoMsg').textContent='✅ Tudo salvo em: '+dados.ultimoSalvo;alert('Tudo salvo! Dia: '+dados.ultimoSalvo)}
+let entradaContaSel='Banco';
+function setEntradaConta(c){entradaContaSel=c;entradaContaSel=c;document.getElementById('eBanco').className=c==='Banco'?'btn g':'btn gh';document.getElementById('eMaos').className=c==='Em mãos'?'btn g':'btn gh'}
+function openEntrada(conta){entradaContaSel=conta||'Banco';setEntradaConta(entradaContaSel);let d=new Date();document.getElementById('entDia').value=d.getDate();document.getElementById('entMes').value=d.getMonth()+1;document.getElementById('entAno').value=d.getFullYear();document.getElementById('entradaModal').classList.add('open')}
+function closeEntrada(){document.getElementById('entradaModal').classList.remove('open')}
+function confirmarEntrada(){let v=parseFloat(String(document.getElementById('entValor').value).replace(',','.'))||0;let dia=parseInt(document.getElementById('entDia').value),mes=parseInt(document.getElementById('entMes').value),ano=parseInt(document.getElementById('entAno').value);if(!v){alert('Digite o valor da entrada');return}if(!dia||!mes||!ano){alert('Data inválida');return}dados.trans.push({tipo:'Receita',desc:document.getElementById('entDesc').value||'Entrada de conta',quem:document.getElementById('entQuem').value,valor:v,dia,mes,ano,categoria:'Entrada',pagamento:entradaContaSel,status:'Recebido',fixa:'Variável',conta:entradaContaSel});document.getElementById('entDesc').value='';document.getElementById('entQuem').value='';document.getElementById('entValor').value='';closeEntrada();salvarTudo()}
+function openSaida(){let d=new Date();document.getElementById('saidaDia').value=d.getDate();document.getElementById('saidaMes').value=d.getMonth()+1;document.getElementById('saidaAno').value=d.getFullYear();document.getElementById('saidaModal').classList.add('open')}
+function closeSaida(){document.getElementById('saidaModal').classList.remove('open')}
+function confirmarSaida(){let v=parseFloat(String(document.getElementById('saidaValor').value).replace(',','.'))||0;let dia=parseInt(document.getElementById('saidaDia').value),mes=parseInt(document.getElementById('saidaMes').value),ano=parseInt(document.getElementById('saidaAno').value);if(!v){alert('Digite o valor da saída');return}if(!dia||!mes||!ano){alert('Data inválida');return}dados.trans.push({tipo:'Despesa',desc:document.getElementById('saidaDesc').value||'Saída de conta',quem:document.getElementById('saidaQuem').value,valor:v,dia,mes,ano,categoria:'Saída de conta',pagamento:saidaContaSel,status:'Pago',fixa:'Variável',conta:saidaContaSel});document.getElementById('saidaDesc').value='';document.getElementById('saidaQuem').value='';document.getElementById('saidaValor').value='';closeSaida();salvarTudo()}
+
+const SENHA_DONO='joao123';
+function entrarDono(){document.getElementById('lockScreen').style.display='none';if(document.getElementById('senhaDono').value===SENHA_DONO){document.getElementById('donoGate').style.display='none';document.getElementById('painelDono').style.display='block'}else{document.getElementById('msgDono').textContent='Senha errada'}}
+function salvarCfgDono(){let n=document.getElementById('cfgNome').value;let c=document.getElementById('cfgCor').value;if(n){document.querySelector('h1').innerHTML=n;localStorage.setItem('marca-cliente',n)}alert('Marca salva para este cliente!')}
+function gerarLicDono(tipo){let dev=document.getElementById('genDev').value.trim();if(!dev){document.getElementById('genOutDono').textContent='Cole o ID primeiro';return}let k=gerarChave(dev,tipo);document.getElementById('genOutDono').textContent=k;window._licDono=k}
+function copiarLicDono(){if(window._licDono)navigator.clipboard.writeText(window._licDono).then(()=>alert('Licença copiada!'))}
+function tab(id,el){['dash','trans','plan','orc','ins'].forEach(x=>document.getElementById(x).style.display=x===id?'block':'none');document.querySelectorAll('header .chip').forEach(c=>c.classList.remove('on'));el.classList.add('on')}
+function setF(f,el){filtro=f;document.querySelectorAll('#trans .chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');render()}
+function editar(i){editIdx=i;let t=dados.trans[i];tipo=t.tipo;status=t.status;fixa=t.fixa||'Variável';categoria=t.categoria||'';pagamento=t.pagamento||'';contaSel=t.conta||'Banco';setConta(contaSel);setTipo(tipo);document.getElementById('desc').value=t.desc||'';document.getElementById('quem').value=t.quem||'';document.getElementById('valor').value=String(t.valor).replace('.',',');document.getElementById('dia').value=t.dia;document.getElementById('mes').value=t.mes;document.getElementById('ano').value=t.ano;document.getElementById('btnCat').textContent=(categoria||'Escolher categoria')+' ▾';document.getElementById('btnPag').textContent=(pagamento||'Escolher pagamento')+' ▾';document.getElementById('modalTitle').textContent='✏️ Editar transação';document.getElementById('btnSalvarTrans').textContent='Salvar edição';document.getElementById('modal').classList.add('open')}
+function openModal(){let d=new Date();document.getElementById('dia').value=d.getDate();document.getElementById('mes').value=d.getMonth()+1;document.getElementById('ano').value=d.getFullYear();editIdx=-1;document.getElementById('modalTitle').textContent='✨ Nova transação';document.getElementById('btnSalvarTrans').textContent='Adicionar transação';document.getElementById('modal').classList.add('open')}
+function closeModal(){document.getElementById('modal').classList.remove('open')}
+let bancoEditIdx=-1;
+function openBanco(idx){bancoEditIdx=(idx==null?-1:idx);let b=idx!=null?dados.bancos[idx]:null;document.getElementById('bancoNome').value=b?b.nome:'';document.getElementById('bancoAg').value=b?b.ag||'':'';document.getElementById('bancoSaldo').value=b?b.saldoInicial:'';document.getElementById('bancoModal').classList.add('open')}
+function closeBanco(){document.getElementById('bancoModal').classList.remove('open')}
+function salvarBanco(){let nome=document.getElementById('bancoNome').value.trim();if(!nome){alert('Digite o nome do banco');return}let nv={nome,ag:document.getElementById('bancoAg').value,saldoInicial:parseFloat(String(document.getElementById('bancoSaldo').value).replace(',','.'))||0,cor:'#2ee86b'};if(bancoEditIdx>=0)dados.bancos[bancoEditIdx]=nv;else dados.bancos.push(nv);closeBanco();save()}
+function excluirBanco(i){if(!confirm('Excluir este banco? As transações dele vão para o primeiro banco.'))return;let nome=dados.bancos[i].nome;dados.bancos.splice(i,1);if(!dados.bancos.length)dados.bancos=[{nome:'Banco',saldoInicial:0,cor:'#2ee86b'}];dados.trans.forEach(t=>{if(t.conta===nome)t.conta=dados.bancos[0].nome});save()}
+function entradaBanco(nome){openEntrada(nome)}
+function saidaBanco(nome){saidaContaSel=nome;openSaida();setSaidaConta(nome)}
+function recalcularContas(){
+ // Sempre recalcula do zero: saldo inicial + receitas recebidas - despesas pagas
+ // Assim mudar o status depois também atualiza o Banco na hora
+ let b=parseFloat(dados.saldoInicial.banco)||0, m=parseFloat(dados.saldoInicial.maos)||0;
+ dados.trans.forEach(t=>{let st=autoStatus(t);let v=parseFloat(t.valor)||0;let c=t.conta||'Banco';
+  if(t.tipo==='Receita'&&(st==='Recebido'||st==='Pago')){ if(c==='Banco') b+=v; else m+=v; }
+  if(t.tipo==='Despesa'&&st==='Pago'){ if(c==='Banco') b-=v; else m-=v; }
+ });
+ dados.contas={banco:b,maos:m};
+ // Bancos: saldo inicial de cada banco + movimentos daquele banco
+ dados.bancos.forEach(bk=>{let s=parseFloat(bk.saldoInicial)||0;dados.trans.forEach(t=>{let st=autoStatus(t),v=parseFloat(t.valor)||0;let c=t.conta||'Banco';let isBank=(c===bk.nome)||(bk.nome==='Banco'&&c==='Banco');if(!isBank)return;if(t.tipo==='Receita'&&(st==='Recebido'||st==='Pago'))s+=v;if(t.tipo==='Despesa'&&st==='Pago')s-=v;});bk.saldoCalc=s;});
+ let totalBancos=dados.bancos.reduce((a,bk)=>a+(bk.saldoCalc||0),0);let totalGeral=totalBancos+(dados.contas.maos||0);
+ let elT=document.getElementById('saldoTotal');if(elT)elT.textContent=fmt(totalGeral);
+ let elD=document.getElementById('saldoTotalDet');if(elD)elD.textContent='Bancos: '+fmt(totalBancos)+' + Em mãos: '+fmt(dados.contas.maos||0);
+ let bl=document.getElementById('bancosList');if(bl)bl.innerHTML=dados.bancos.map((bk,i)=>`<div style="background:#0d1d13;border-radius:14px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;gap:8px"><div><b>🏦 ${bk.nome}</b><br><small style="color:#a8c0b2">${bk.ag||''}</small></div><div style="text-align:right"><b>${fmt(bk.saldoCalc||0)}</b><br><button onclick="entradaBanco('${bk.nome}')" style="background:#2ee86b;color:#06210f;border:0;border-radius:8px;padding:4px 8px;font-weight:700">Entrada</button> <button onclick="saidaBanco('${bk.nome}')" style="background:#ffcf3f;border:0;border-radius:8px;padding:4px 8px;font-weight:700">Saída</button> <button onclick="openBanco(${i})" style="background:#182d21;color:#fff;border:0;border-radius:8px;padding:4px 8px">Editar</button> <button onclick="excluirBanco(${i})" style="background:none;color:#ff8a8a;border:0">Excluir</button></div></div>`).join('');
+ 
+}
+function openSaldoInicial(){document.getElementById('iniBanco').value=dados.saldoInicial.banco||'';document.getElementById('iniMaos').value=dados.saldoInicial.maos||'';document.getElementById('saldoModal').classList.add('open')}
+function closeSaldoInicial(){document.getElementById('saldoModal').classList.remove('open')}
+function salvarSaldoInicial(){dados.saldoInicial={banco:parseFloat(String(document.getElementById('iniBanco').value).replace(',','.'))||0,maos:parseFloat(String(document.getElementById('iniMaos').value).replace(',','.'))||0};closeSaldoInicial();save();alert('Saldo inicial salvo! Agora toda receita recebida entra e toda despesa paga sai.')}
+function setTipo(t){tipo=t;document.getElementById('tDesp').className=t==='Despesa'?'btn g':'btn gh';document.getElementById('tRec').className=t==='Receita'?'btn g':'btn gh';document.getElementById('lblQuem').textContent=t==='Receita'?'De quem recebi':'Para quem paguei';if(t==='Receita'){setConta('Banco')} if(t==='Receita'&&status==='A Vencer')status='A Receber';if(t==='Despesa'&&status==='A Receber')status='A Vencer'}
+function setStatus(s){status=s} function setConta(c){contaSel=c;document.getElementById('cBanco').className=c==='Banco'?'btn g':'btn gh';document.getElementById('cMaos').className=c==='Em mãos'?'btn g':'btn gh'} function setSaidaConta(c){saidaContaSel=c;document.getElementById('sBanco').className=c==='Banco'?'btn g':'btn gh';document.getElementById('sMaos').className=c==='Em mãos'?'btn g':'btn gh'}function setFixa(f){fixa=f}
+function hoje(){let d=new Date();document.getElementById('dia').value=d.getDate();document.getElementById('mes').value=d.getMonth()+1;document.getElementById('ano').value=d.getFullYear()}
+function ontem(){let d=new Date();d.setDate(d.getDate()-1);document.getElementById('dia').value=d.getDate();document.getElementById('mes').value=d.getMonth()+1;document.getElementById('ano').value=d.getFullYear()}
+let pickType='';function openPick(t){pickType=t;document.getElementById('pickTitle').textContent=t==='cat'?'Escolher categoria':'Escolher pagamento';let arr=t==='cat'?(tipo==='Receita'?catsR:catsD):pags;document.getElementById('pickList').innerHTML=arr.map(x=>`<button class="opt" onclick="choose('${x}')">${x}</button>`).join('');document.getElementById('pickModal').classList.add('open')}
+function choose(x){if(pickType==='cat'){categoria=x;document.getElementById('btnCat').textContent=x+' ▾'}else{pagamento=x;document.getElementById('btnPag').textContent=x+' ▾'}closePick()}
+function closePick(){document.getElementById('pickModal').classList.remove('open')}
+function salvar(){let v=parseFloat(String(document.getElementById('valor').value).replace(',','.'))||0;let dia=parseInt(document.getElementById('dia').value),mes=parseInt(document.getElementById('mes').value),ano=parseInt(document.getElementById('ano').value);if(!dia||!mes||!ano||dia<1||dia>31||mes<1||mes>12){alert('Data inválida. Digite DIA / MÊS / ANO');return}if(!categoria){alert('Escolha a categoria');return}if(!pagamento){alert('Escolha a forma de pagamento');return}let novo={tipo,desc:document.getElementById('desc').value,quem:document.getElementById('quem').value,valor:v,dia,mes,ano,categoria,pagamento,status,fixa,conta:contaSel};
+if(editIdx>=0){dados.trans[editIdx]=novo;editIdx=-1}else{dados.trans.push(novo)}document.getElementById('desc').value='';document.getElementById('quem').value='';document.getElementById('valor').value='';categoria='';pagamento='';document.getElementById('btnCat').textContent='Escolher categoria ▾';document.getElementById('btnPag').textContent='Escolher pagamento ▾';closeModal();save()}
+let statusIdx=-1;
+function openStatusPicker(i){statusIdx=i;let t=dados.trans[i];let ops=t.tipo==='Receita'?['A Receber','Recebido','Em Atraso']:['A Vencer','Pago','Em Atraso'];document.getElementById('statusList').innerHTML=ops.map(s=>`<button class="opt" onclick="chooseStatus('${s}')">${s} ${autoStatus(t)===s?'✓':''}</button>`).join('');document.getElementById('statusModal').classList.add('open')}
+function closeStatusPicker(){document.getElementById('statusModal').classList.remove('open')}
+function chooseStatus(s){if(statusIdx>=0){dados.trans[statusIdx].status=s;closeStatusPicker();save()}}
+function trocar(i){let t=dados.trans[i],st=autoStatus(t);if(t.tipo==='Receita'){t.status=st==='A Receber'?'Recebido':st==='Recebido'?'Em Atraso':'A Receber'}else{t.status=st==='A Vencer'?'Pago':st==='Pago'?'Em Atraso':'A Vencer'}save()}
+function excluir(i){if(confirm('Excluir?')){dados.trans.splice(i,1);save()}}
+function limpar(){if(confirm('Limpar transações? Seu cabeçalho será mantido.')){let pf=dados.perfil;dados={trans:[],meta:0,orcAlim:0,perfil:pf};save()}}
+function salvarMeta(){dados.meta=parseFloat(document.getElementById('meta').value)||0;save()}
+function salvarOrc(){dados.orcAlim=parseFloat(document.getElementById('orcAlim').value)||0;save()}
+render();
+</script><script>setTimeout(()=>{document.getElementById('donoGate').style.display='flex';document.getElementById('lockScreen').style.display='none';},100);</script></body></html>
