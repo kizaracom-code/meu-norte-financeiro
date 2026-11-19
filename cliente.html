@@ -165,13 +165,15 @@ function verificarTrava(){
  // travado
  document.getElementById('lockScreen').style.display='block';
  document.getElementById('myDeviceId').textContent=deviceId;
- document.getElementById('trialInfo').textContent='Teste de 24 horas encerrado.';
+ document.getElementById('trialInfo').textContent='Teste de 24 horas encerrado. Licença esperada para este ID (Mensal): '+gerarChave(deviceId,'MENSAL');
  return false;
 }
 function ativarLicenca(){
- let k=(document.getElementById('licKey').value||'').trim().toUpperCase();
+ let k=(document.getElementById('licKey').value||'').trim().toUpperCase().replace(/\s+/g,'');
+ let idShown=(document.getElementById('myDeviceId').textContent||'').trim().toUpperCase();
+ let idUse=idShown||deviceId;
  let tipo=k.startsWith('VITALICIA')?'VITALICIA':k.startsWith('MENSAL')?'MENSAL':null;
- if(!tipo||k!==gerarChave(deviceId,tipo)){document.getElementById('licMsg').textContent='Licença inválida para este celular. Confira o ID.';return}
+ if(!tipo||k!==gerarChave(idUse,tipo)){document.getElementById('licMsg').textContent='Licença inválida. Esperada para este ID: '+gerarChave(idUse,'MENSAL');return}
  localStorage.setItem('licenca',JSON.stringify({key:k,tipo,ativado:Date.now()}));
  document.getElementById('licMsg').textContent='';verificarTrava();alert('App liberado! '+(tipo==='VITALICIA'?'Licença vitalícia.':'Licença mensal - 30 dias.'));
 }
