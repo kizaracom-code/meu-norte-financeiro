@@ -1,0 +1,17 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Área do Dono - Meu Norte Financeiro</title><style>body{margin:0;background:#050f0a;color:#fff;font-family:system-ui;padding:20px}*{box-sizing:border-box}.card{max-width:480px;margin:30px auto;background:#101f17;border:1px solid #2a4a38;border-radius:20px;padding:24px}h2{margin:0}label{display:block;margin:14px 0 6px;color:#a8c0b2}input{width:100%;padding:14px;border-radius:12px;border:1px solid #2a4a38;background:#07120d;color:#fff;font-size:16px}button{width:100%;padding:16px;border:0;border-radius:14px;background:#2ee86b;color:#06210f;font-weight:800;font-size:16px;cursor:pointer;margin-top:12px}.gh{background:#182d21;color:#fff;border:1px solid #2a4a38}.row{display:flex;gap:10px}.out{background:#07120d;padding:14px;border-radius:12px;color:#2ee86b;font-weight:800;word-break:break-all;margin-top:12px;min-height:48px}.muted{color:#a8c0b2;font-size:13px;line-height:1.5}</style></head><body>
+<div id="gate" class="card"><h2>👑 Área do Dono</h2><p class="muted">Só o dono entra aqui. O cliente nunca vê essa tela.</p><label>Senha do dono</label><input id="senha" type="password" placeholder="Senha"><button onclick="entrar()">Entrar como dono</button><p id="msg" style="color:#ff8a8a"></p><p class="muted">Senha inicial: <b>joao123</b></p></div>
+<div id="painel" class="card" style="display:none"><h2>👑 Painel do Dono</h2><p class="muted">1 - O cliente te manda o ID dele.<br>2 - Você cola aqui, gera a licença.<br>3 - Manda a licença pra ele colar no app dele.<br>4 - Manda pro cliente SÓ o link: <b>.../cliente.html</b></p>
+<label>Nome / Logomarca do cliente (só pra você anotar)</label><input id="nomeCli" placeholder="Ex: Financeiro da Maria">
+<label>ID do celular do cliente</label><input id="dev" placeholder="Ex: CEL-XXXX-XXXX">
+<div class="row"><button class="gh" onclick="gerar('MENSAL')">Mensal - 30 dias</button><button class="gh" onclick="gerar('VITALICIA')">Vitalícia</button></div>
+<div class="out" id="out">A licença vai aparecer aqui</div><button onclick="copiar()">📋 Copiar licença</button>
+<p class="muted">Autoteste: para o ID CEL-4W2LOF-MWJLOT7G a licença mensal tem que ser: <b id="autoTeste"></b><br>Se o botão gerar der diferente disso, o arquivo está misturado.</p><script>document.getElementById('autoTeste').textContent=gerarChave('CEL-4W2LOF-MWJLOT7G','MENSAL')</script></div>
+<script>
+const SEGREDO='NORTE-2026-UNICO';
+function hashStr(s){let h=5381;for(let i=0;i<s.length;i++){h=((h*33)^s.charCodeAt(i))>>>0}return h.toString(36).toUpperCase().padStart(6,'0')}
+function gerarChave(dev,tipo){let a=hashStr(dev+'|'+tipo+'|'+SEGREDO);let b=hashStr(tipo+'|'+dev+'|'+SEGREDO+'X');return tipo+'-'+a+'-'+b}
+function entrar(){if(document.getElementById('senha').value==='joao123'){document.getElementById('gate').style.display='none';document.getElementById('painel').style.display='block'}else{document.getElementById('msg').textContent='Senha errada'}}
+let atual='';
+function gerar(tipo){let dev=document.getElementById('dev').value.trim().toUpperCase();if(!dev){document.getElementById('out').textContent='Cole o ID primeiro';return}atual=gerarChave(dev,tipo);document.getElementById('out').textContent=atual}
+function copiar(){if(!atual)return;navigator.clipboard.writeText(atual).then(()=>alert('Licença copiada!'))}
+</script></body></html>
