@@ -143,7 +143,7 @@ function closePerfil(){document.getElementById('perfilModal').classList.remove('
 function salvarPerfil(){dados.perfil={nome:document.getElementById('pNome').value,end:document.getElementById('pEnd').value,tel:document.getElementById('pTel').value,doc:document.getElementById('pDoc').value};closePerfil();save()}
 
 // ===== TRAVA / LICENÇA - não mexe em nada do app, só bloqueia por cima =====
-const SEGREDO='MEU-NORTE-2026-SEGREDO';
+const SEGREDO='NORTE-2026-UNICO';
 let deviceId=localStorage.getItem('device_id');
 if(!deviceId){deviceId='CEL-'+Math.random().toString(36).slice(2,8).toUpperCase()+'-'+Date.now().toString(36).toUpperCase();localStorage.setItem('device_id',deviceId);}
 let trialStart=parseInt(localStorage.getItem('trial_start')||'0');
@@ -201,22 +201,32 @@ function excluirBanco(i){if(!confirm('Excluir este banco? As transações dele v
 function entradaBanco(nome){openEntrada(nome)}
 function saidaBanco(nome){saidaContaSel=nome;openSaida();setSaidaConta(nome)}
 function recalcularContas(){
- // Sempre recalcula do zero: saldo inicial + receitas recebidas - despesas pagas
- // Assim mudar o status depois também atualiza o Banco na hora
- let b=parseFloat(dados.saldoInicial.banco)||0, m=parseFloat(dados.saldoInicial.maos)||0;
- dados.trans.forEach(t=>{let st=autoStatus(t);let v=parseFloat(t.valor)||0;let c=t.conta||'Banco';
-  if(t.tipo==='Receita'&&(st==='Recebido'||st==='Pago')){ if(c==='Banco') b+=v; else m+=v; }
-  if(t.tipo==='Despesa'&&st==='Pago'){ if(c==='Banco') b-=v; else m-=v; }
- });
- dados.contas={banco:b,maos:m};
- // Bancos: saldo inicial de cada banco + movimentos daquele banco
- dados.bancos.forEach(bk=>{let s=parseFloat(bk.saldoInicial)||0;dados.trans.forEach(t=>{let st=autoStatus(t),v=parseFloat(t.valor)||0;let c=t.conta||'Banco';let isBank=(c===bk.nome)||(bk.nome==='Banco'&&c==='Banco');if(!isBank)return;if(t.tipo==='Receita'&&(st==='Recebido'||st==='Pago'))s+=v;if(t.tipo==='Despesa'&&st==='Pago')s-=v;});bk.saldoCalc=s;});
- let totalBancos=dados.bancos.reduce((a,bk)=>a+(bk.saldoCalc||0),0);let totalGeral=totalBancos+(dados.contas.maos||0);
- let elT=document.getElementById('saldoTotal');if(elT)elT.textContent=fmt(totalGeral);
- let elD=document.getElementById('saldoTotalDet');if(elD)elD.textContent='Bancos: '+fmt(totalBancos)+' + Em mãos: '+fmt(dados.contas.maos||0);
- let bl=document.getElementById('bancosList');if(bl)bl.innerHTML=dados.bancos.map((bk,i)=>`<div style="background:#0d1d13;border-radius:14px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;gap:8px"><div><b>🏦 ${bk.nome}</b><br><small style="color:#a8c0b2">${bk.ag||''}</small></div><div style="text-align:right"><b>${fmt(bk.saldoCalc||0)}</b><br><button onclick="entradaBanco('${bk.nome}')" style="background:#2ee86b;color:#06210f;border:0;border-radius:8px;padding:4px 8px;font-weight:700">Entrada</button> <button onclick="saidaBanco('${bk.nome}')" style="background:#ffcf3f;border:0;border-radius:8px;padding:4px 8px;font-weight:700">Saída</button> <button onclick="openBanco(${i})" style="background:#182d21;color:#fff;border:0;border-radius:8px;padding:4px 8px">Editar</button> <button onclick="excluirBanco(${i})" style="background:none;color:#ff8a8a;border:0">Excluir</button></div></div>`).join('');
- 
+  // CORREÇÃO: fonte única. Saldo inicial do "Ajustar Banco" migra para dentro do banco "Banco".
+  // Antes ele era somado de novo junto com o saldo do banco "Banco" -> contava 2x.
+  if((parseFloat(dados.saldoInicial.banco)||0)!==0){
+    let bb=dados.bancos.find(bk=>bk.nome==='Banco');
+    if(bb){ if(!(parseFloat(bb.saldoInicial)||0)) bb.saldoInicial=dados.saldoInicial.banco; }
+    else dados.bancos.unshift({nome:'Banco',saldoInicial:dados.saldoInicial.banco,cor:'#2ee86b'});
+    dados.saldoInicial.banco=0;
+  }
+  // Em mãos: SÓ conta transação cuja conta é exatamente "Em mãos".
+  // Antes: qualquer conta diferente de "Banco" (Caixa, Neon, Mercado Pago...) caía no Em mãos -> duplicava.
+  let m=parseFloat(dados.saldoInicial.maos)||0;
+  dados.trans.forEach(t=>{let st=autoStatus(t);let v=parseFloat(t.valor)||0;let c=t.conta||'Banco';
+   if(c!=='Em mãos')return;
+   if(t.tipo==='Receita'&&(st==='Recebido'||st==='Pago'))m+=v;
+   if(t.tipo==='Despesa'&&st==='Pago')m-=v;});
+  dados.contas={banco:0,maos:m};
+  // Bancos: saldo inicial de cada banco + SÓ os movimentos daquele banco
+  dados.bancos.forEach(bk=>{let s=parseFloat(bk.saldoInicial)||0;dados.trans.forEach(t=>{let st=autoStatus(t),v=parseFloat(t.valor)||0;let c=t.conta||'Banco';let isBank=(c===bk.nome)||(bk.nome==='Banco'&&c==='Banco');if(!isBank)return;if(t.tipo==='Receita'&&(st==='Recebido'||st==='Pago'))s+=v;if(t.tipo==='Despesa'&&st==='Pago')s-=v;});bk.saldoCalc=s;});
+  let totalBancos=dados.bancos.reduce((a,bk)=>a+(bk.saldoCalc||0),0);
+  dados.contas.banco=totalBancos;
+  let totalGeral=totalBancos+(dados.contas.maos||0);
+  let elT=document.getElementById('saldoTotal');if(elT)elT.textContent=fmt(totalGeral);
+  let elD=document.getElementById('saldoTotalDet');if(elD)elD.textContent='Bancos: '+fmt(totalBancos)+' + Em mãos: '+fmt(dados.contas.maos||0);
+  let bl=document.getElementById('bancosList');if(bl)bl.innerHTML=dados.bancos.map((bk,i)=>`<div style="background:#0d1d13;border-radius:14px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;gap:8px"><div><b>🏦 ${bk.nome}</b><br><small style="color:#a8c0b2">${bk.ag||''}</small></div><div style="text-align:right"><b>${fmt(bk.saldoCalc||0)}</b><br><button onclick="entradaBanco('${bk.nome}')" style="background:#2ee86b;color:#06210f;border:0;padding:6px 10px;border-radius:8px;font-weight:700;margin:2px">Entrada</button><button onclick="saidaBanco('${bk.nome}')" style="background:#ffcc33;color:#06210f;border:0;padding:6px 10px;border-radius:8px;font-weight:700;margin:2px">Saída</button><button onclick="openBanco(${i})" style="background:#1d2f24;color:#fff;border:0;padding:6px 10px;border-radius:8px;margin:2px">Editar</button><button onclick="excluirBanco(${i})" style="background:transparent;color:#ff6b6b;border:0;padding:6px 8px;margin:2px">Excluir</button></div></div>`).join('');
 }
+
 function openSaldoInicial(){document.getElementById('iniBanco').value=dados.saldoInicial.banco||'';document.getElementById('iniMaos').value=dados.saldoInicial.maos||'';document.getElementById('saldoModal').classList.add('open')}
 function closeSaldoInicial(){document.getElementById('saldoModal').classList.remove('open')}
 function salvarSaldoInicial(){dados.saldoInicial={banco:parseFloat(String(document.getElementById('iniBanco').value).replace(',','.'))||0,maos:parseFloat(String(document.getElementById('iniMaos').value).replace(',','.'))||0};closeSaldoInicial();save();alert('Saldo inicial salvo! Agora toda receita recebida entra e toda despesa paga sai.')}
